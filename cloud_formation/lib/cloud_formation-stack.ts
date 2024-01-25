@@ -39,7 +39,7 @@ export class CloudFormationStack extends cdk.Stack {
         const websiteBucket: s3.Bucket = this.createOrUpdateWebsiteBucket(messageApi, props);
             
         // Create or update CloudWatch dashboard
-        this.createOrUpdateCloudWatchDashboard(serverLambda, messageApi, messageTable);
+        this.createOrUpdateCloudWatchDashboard(serverLambda, messageApi, messageTable, props);
         }
         
     /**
