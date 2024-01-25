@@ -6,7 +6,6 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as logs from 'aws-cdk-lib/aws-logs'; // For API Gateway logging
 import * as assets from 'aws-cdk-lib/aws-s3-assets';
 import * as apig from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -134,49 +133,6 @@ export class CloudFormationStack extends cdk.Stack {
             ),
             deployOptions: { stageName: props.stageName },
         });
-
-/// Begin logging code
-        // Explicitly create a deployment for the SpecRestApi
-        const deployment = new apig.Deployment(this, 'ApiDeployment', {
-            api: restApi
-        });
-
-        // Ensure that changes to the API trigger a new deployment
-        deployment.node.addDependency(restApi);
-
-        // Create a log group for API Gateway access logs
-        const apiLogGroup = new logs.LogGroup(this, 'ApiGatewayLogGroup', {
-            logGroupName: `/aws/apigateway/${restApi.restApiName}`,
-            retention: logs.RetentionDays.ONE_MONTH,
-            removalPolicy: cdk.RemovalPolicy.DESTROY,
-        });
-
-        // Define access log format
-        const accessLogFormat = apig.AccessLogFormat.jsonWithStandardFields({
-            caller: true,
-            httpMethod: true,
-            ip: true,
-            protocol: true,
-            requestTime: true,
-            resourcePath: true,
-            responseLength: true,
-            status: true,
-            user: true,
-        });
-        // Associate the log group with the API Stage
-        new apig.CfnStage(this, 'ApiStage', {
-            stageName: props.stageName,
-            deploymentId: deployment.deploymentId,
-            restApiId: restApi.restApiId,
-            accessLogSetting: {
-                destinationArn: apiLogGroup.logGroupArn,
-                format: accessLogFormat.toString(),
-            },
-        });
-
-        // Grant API Gateway permissions to write to the log group
-        apiLogGroup.grantWrite(new iam.ServicePrincipal('apigateway.amazonaws.com'));
-/// End logging code
 
         // Give the the rest api execute ARN permission to invoke the lambda.
         serverLambda.addPermission("ApiInvokeLambdaPermission", {
