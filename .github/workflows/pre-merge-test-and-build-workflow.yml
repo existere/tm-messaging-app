@@ -5,14 +5,14 @@ on:
 
   pull_request:
     branches:
-      - none
+      - main
 
     # Pull request types can be found here:
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
     types: [opened, synchronize, reopened]
   push:
     branches:
-      - none
+      - main
 
 jobs:
 
