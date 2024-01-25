@@ -245,11 +245,17 @@ export class CloudFormationStack extends cdk.Stack {
         serverLambda: lambda.Function, 
         messageApi: apig.SpecRestApi,
         messageTable: dynamodb.Table,
+        props: CloudFormationStackProps
         ): void {
 
         // Create a CloudWatch dashboard
-        const dashboard = new cloudwatch.Dashboard(this, 'CloudWatchDashboard', {
-            dashboardName: 'CloudWatchDashboard',
+        const dashboardId: string = 'CloudWatchDashboard';
+
+        // const websiteBucket: s3.Bucket = new s3.Bucket(this, websiteBucketId, {
+            // bucketName: CloudFormationStackUtils.getResourceName(websiteBucketId, props).toLowerCase(),
+
+        const dashboard: cloudwatch.Dashboard = new cloudwatch.Dashboard(this, dashboardId, {
+            dashboardName: CloudFormationStackUtils.getResourceName(dashboardId, props),
             start: '-P1D', // Show data for the last 1 day
         });
 
