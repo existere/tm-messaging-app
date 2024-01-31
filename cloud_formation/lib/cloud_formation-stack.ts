@@ -15,7 +15,7 @@ import { CloudFormationStackUtils } from './cloud_formation-stack-util';
 
 /**
  * @class CloudFormationStack
- * @classdesc Creates a Cloudformation stack with a website, a DynamoDB table, and a Lambda function.
+ * @classdesc Creates a Cloudformation stack with a website, a DynamoDB table, a Lambda function, and a CloudWatch dashboard.
 */
 export class CloudFormationStack extends cdk.Stack {
     
@@ -239,7 +239,8 @@ export class CloudFormationStack extends cdk.Stack {
      * @method createOrUpdateCloudWatchDashboard
      * @description Creates or updates a CloudWatch dashboard with relevant metrics.
      * @param {lambda.Function} serverLambda The Lambda function.
-     * @param {apig.SpecRestApi} messageApi The API the widgest will call.
+     * @param {CloudFormationStackProps} props The stack properties.
+     * @param {apig.SpecRestApi} messageApi The API the widgets will call.
      */
     createOrUpdateCloudWatchDashboard(
         serverLambda: lambda.Function, 
@@ -250,10 +251,6 @@ export class CloudFormationStack extends cdk.Stack {
 
         // Create a CloudWatch dashboard
         const dashboardId: string = 'CloudWatchDashboard';
-
-        // const websiteBucket: s3.Bucket = new s3.Bucket(this, websiteBucketId, {
-            // bucketName: CloudFormationStackUtils.getResourceName(websiteBucketId, props).toLowerCase(),
-
         const dashboard: cloudwatch.Dashboard = new cloudwatch.Dashboard(this, dashboardId, {
             dashboardName: CloudFormationStackUtils.getResourceName(dashboardId, props),
             start: '-P1D', // Show data for the last 1 day
